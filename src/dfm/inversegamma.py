@@ -2,6 +2,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 import numpy as np
 from scipy.stats import f as f_dist
+import matplotlib.pyplot as plt
+
 
 def scaled_f_predictive(x):
     return x
@@ -62,3 +64,85 @@ def fit_igdf_hyperparams(
         beta_grid=beta_grid,
         loglik_grid=loglik_grid if return_surface else None,
     )
+
+def plot_igdf_loglik_surface(
+    fit: IGDFitResult,
+    *,
+    levels: int | list[int] = 12,
+    show_mle: bool = True,
+    title: str | None = None
+):
+    """
+    Heatmap + contour plot of the log-likelihood surface over (alpha, beta).
+    Returns (fig, ax).
+    """
+    if fit.loglik_grid is None:
+        raise ValueError("fit.loglik_grid is None. Call fit_igdf_hyperparams(..., return_surface=True).")
+
+    A, B = np.meshgrid(fit.beta_grid, fit.alpha_grid)  # note: X-axis = beta, Y-axis = alpha
+    Z = fit.loglik_grid
+
+    fig, ax = plt.subplots(figsize=(6.5, 5.0))
+    im = ax.imshow(
+        Z,
+        origin="lower",
+        aspect="auto",
+        extent=[fit.beta_grid.min(), fit.beta_grid.max(),
+                fit.alpha_grid.min(), fit.alpha_grid.max()]
+    )
+    cbar = fig.colorbar(im, ax=ax, shrink=0.9)
+    cbar.set_label("log-likelihood", rotation=90)
+
+    # Contours (same grid but explicit coordinates)
+    CS = ax.contour(
+        B, A, Z,
+        levels=levels if isinstance(levels, int) else levels
+    )
+    ax.clabel(CS, inline=True, fontsize=8, fmt="%.1f")
+
+    if show_mle:
+        ax.scatter(fit.beta_star, fit.alpha_star, s=60, marker="x")
+        ax.annotate(
+            fr"MLE: $\alpha^*={fit.alpha_star:.3g}$, $\beta^*={fit.beta_star:.3g}$",
+            (fit.beta_star, fit.alpha_star),
+            xytext=(8, 8), textcoords="offset points"
+        )
+
+    ax.set_xlabel(r"$\beta$")
+    ax.set_ylabel(r"$\alpha$")
+    ax.set_title(title or "IGDF log-likelihood surface")
+    ax.set_xlim(fit.beta_grid.min(), fit.beta_grid.max())
+    ax.set_ylim(fit.alpha_grid.min(), fit.alpha_grid.max())
+    ax.grid(False)
+    fig.tight_layout()
+    return fig, ax
+
+
+def fit_and_plot_igdf(
+    y: np.ndarray,
+    *,
+    alpha_grid=None,
+    beta_grid=None,
+    n0: float = 49.0,
+    s0: float = 1/5000.0,
+    clip: float = 1e-12,
+    warmup: int = 0,
+    levels: int = 12
+):
+    """
+    Convenience: fit hyperparameters on a grid and immediately plot the surface.
+    Returns (fit_result, (fig, ax)).
+    """
+    fit = fit_igdf_hyperparams(
+        y,
+        alpha_grid=alpha_grid,
+        beta_grid=beta_grid,
+        n0=n0,
+        s0=s0,
+        clip=clip,
+        warmup=warmup,
+        return_surface=True,
+    )
+    fig_ax = plot_igdf_loglik_surface(fit, levels=levels)
+    return fit, fig_ax
+
