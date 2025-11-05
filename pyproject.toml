@@ -17,4 +17,4 @@ Repository = "https://github.com/PSW1998/DFM"
 Issues = "https://github.com/PSW1998/DFM/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = [{ include = "dfm", from = "src" }]          # IMPORTANT: matches your folder
+packages = ["src/dfm"]        # IMPORTANT: matches your folder
