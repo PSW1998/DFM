@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dynamic-f-models"          # PyPI name; ok even if you never publish
+version = "0.1.0"
+description = "Dynamic-F models for realized volatility and related filters"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Patrick Woitschig" }]
+dependencies = ["numpy>=1.22", "scipy>=1.9", "pandas>=1.5"]
+
+[project.urls]
+Homepage = "https://github.com/PSW1998/dfm"
+Repository = "https://github.com/PSW1998/dfm"
+Issues = "https://github.com/PSW1998/dfm/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dfm"]              # IMPORTANT: matches your folder
