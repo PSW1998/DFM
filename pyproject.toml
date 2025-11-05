@@ -12,9 +12,9 @@ authors = [{ name = "Patrick Woitschig" }]
 dependencies = ["numpy>=1.22", "scipy>=1.9", "pandas>=1.5"]
 
 [project.urls]
-Homepage = "https://github.com/PSW1998/dfm"
-Repository = "https://github.com/PSW1998/dfm"
-Issues = "https://github.com/PSW1998/dfm/issues"
+Homepage = "https://github.com/PSW1998/DFM"
+Repository = "https://github.com/PSW1998/DFM"
+Issues = "https://github.com/PSW1998/DFM/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = [{ include = "dfm", from = "src" }]          # IMPORTANT: matches your folder
