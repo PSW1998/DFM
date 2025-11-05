@@ -1,11 +1,10 @@
-def scaled_f_predictive(x):
-    return x
-
-
 from __future__ import annotations
 from dataclasses import dataclass
 import numpy as np
 from scipy.stats import f as f_dist
+
+def scaled_f_predictive(x):
+    return x
 
 @dataclass(frozen=True)
 class IGDFitResult:
